@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import useSound from 'use-sound'
 
 function StudyTime(props){
 
@@ -17,6 +18,12 @@ function StudyTime(props){
 
     const sessionComplete = () =>{ setSessionLeft(prevSessions => prevSessions - 1) }
 
+    const [play] = useSound("/791279__micah10__tom-10.wav");
+
+    const [playWin] = useSound("/270466__littlerobotsoundfactory__jingle_win_00.wav", {volume:.2})
+
+    const [hasWon, setHasWon] = useState(false);
+
     //main loop
     useEffect(() => {
         let interval;
@@ -25,14 +32,14 @@ function StudyTime(props){
         if(study && timeLeft > 0 && sessionLeft > 0){
           interval = setInterval(() => {
             setTimeLeft(prevTime => prevTime - 1);
-          }, 10);
+          }, 100);
         }
 
         //break
         else if(!study && breakLeft > 0){
           interval = setInterval(() => {
             setBreakLeft(prevBreak => prevBreak -1);
-          }, 10);
+          }, 100);
         }
         
         return () => clearInterval(interval);
@@ -42,6 +49,7 @@ function StudyTime(props){
     useEffect(() => {
       //transition from study to break
       if(timeLeft === 0 && study){
+        play()
         sessionComplete();
         setStudy(false)
         resetBreak();
@@ -49,6 +57,7 @@ function StudyTime(props){
 
       //transition from break to study
       else if(breakLeft === 0 && !study && sessionLeft > 0){
+        play()
         setStudy(true)
         resetTimer();
       }
@@ -56,6 +65,10 @@ function StudyTime(props){
       //sets done flag to true for conditional rendering
       else if(sessionLeft === 0){
         setDone(true)
+        if(!hasWon){
+          playWin()
+          setHasWon(true)
+        }
       }
     })
 
@@ -69,15 +82,15 @@ function StudyTime(props){
     return(
         <>
             {done ? (
-              <p>You just completed {totalTime} minutes of studying!</p>
+              <p className="ending-paragraph">You just completed {totalTime} minutes of studying!</p>
             ): (
             <>
               {study ? (
-                <p>
+                <p className="study">
                   Study Timer: {`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`}
                 </p>
               ) : (
-                <p>
+                <p className="break">
                   Break Timer: {`${breakMinutes}:${breakSeconds < 10 ? '0' : ''}${breakSeconds}`}
                 </p>
               )}

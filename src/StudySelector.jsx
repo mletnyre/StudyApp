@@ -24,9 +24,17 @@ function StudySelector(){
         }));
     }
 
+    const handleGoBack = () =>{
+        setValues((prevValues) => ({
+            ...prevValues, pressed: false
+        }));
+    }
     return(
-        values.pressed ? (    
-            <StudyTime className="bigStudySelector" study={values.studyBox} break={values.breakBox} sessions={values.amountBox}/>
+        values.pressed ? (
+            <div>
+                <StudyTime className="bigStudySelector" study={values.studyBox} break={values.breakBox} sessions={values.amountBox}/>
+                <button className="backButton" onClick={handleGoBack}> Go Back </button>
+            </div>
         ) : (    
             <div className="bigStudySelector">
                 <div className="studySelector">
@@ -36,7 +44,7 @@ function StudySelector(){
                 </div>
                     <button className='button'onClick={handleSave}>Study!</button>
             </div>
-        )
+        ) 
     )
 }
 
